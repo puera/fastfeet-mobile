@@ -2,48 +2,23 @@ import { takeLatest, call, put, all } from 'redux-saga/effects';
 import { Alert } from 'react-native';
 
 import api from '~/services/api';
+import * as RootNavigation from '~/services/RootNavigation';
 
 import { signInSuccess, signInFailure } from './actions';
 
 export function* signIn({ payload }) {
   try {
-    const { email, password } = payload;
+    const { id } = payload;
 
-    const response = yield call(api.post, 'sessions', {
-      email,
-      password,
-    });
+    const response = yield call(api.get, `delivermans/${id}`);
 
-    const { token, user } = response.data;
+    const deliveryman = response.data;
 
-    api.defaults.headers.Authorization = `Bearer ${token}`;
-
-    yield put(signInSuccess(token, user));
-
-    // history.push('/deliveries');
+    yield put(signInSuccess(deliveryman));
+    RootNavigation.navigate('Dashboard');
   } catch (error) {
     yield put(signInFailure());
     Alert.alert('Falha na autenticação', 'verifique seus dados');
   }
 }
-
-export function setToken({ payload }) {
-  if (!payload) return;
-
-  const { token } = payload.auth;
-
-  if (token) {
-    api.defaults.headers.Authorization = `Bearer ${token}`;
-  }
-}
-
-export function signOut() {
-  // history.push('/');
-  // toast.info('Deslogado do sistema com sucesso!');
-}
-
-export default all([
-  takeLatest('persist/REHYDRATE', setToken),
-  takeLatest('@auth/SIGN_IN_REQUEST', signIn),
-  takeLatest('@auth/SIGN_OUT', signOut),
-]);
+export default all([takeLatest('@auth/SIGN_IN_REQUEST', signIn)]);
