@@ -16,7 +16,7 @@ import {
   LogoutButton,
 } from './styles';
 
-export default function Profile({ profile }) {
+export default function Header({ profile }) {
   const dispatch = useDispatch();
 
   return (
@@ -37,11 +37,15 @@ export default function Profile({ profile }) {
   );
 }
 
-Profile.propTypes = {
+Header.propTypes = {
   profile: PropTypes.shape({
     name: PropTypes.string.isRequired,
     avatar: PropTypes.shape({
       url: PropTypes.string.isRequired,
     }),
-  }).isRequired,
+  }),
+};
+
+Header.defaultProps = {
+  profile: null,
 };

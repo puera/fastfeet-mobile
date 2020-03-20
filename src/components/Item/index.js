@@ -30,6 +30,7 @@ export default function DeliveryItem({ delivery, handleSeeDetailsPressed }) {
       }),
     [delivery.createdAt]
   );
+  console.tron.log(delivery);
   return (
     <Contanier>
       <DeliveryHeader>

@@ -51,9 +51,9 @@ export const StepName = styled.Text.attrs({
 export const Line = styled.View`
   position: absolute;
   top: 5px;
-  width: 84%;
+  width: 100%;
   margin-left: 8%;
-  margin-right: 8%;
+  margin-right: 30%;
   height: 2px;
   background: #7d40e7;
 `;

@@ -7,6 +7,7 @@ import api from '~/services/api';
 
 import DeliveryItem from '~/components/Item';
 import Profile from '~/components/Profile';
+import Background from '~/components/Background';
 
 import { Container, List } from './styles';
 
@@ -41,7 +42,7 @@ export default function Delivery({ navigation: { push } }) {
           <DeliveryItem
             delivery={item}
             handleSeeDetailsPressed={() =>
-              push('', {
+              push('DeliveryDetail', {
                 delivery: item,
               })
             }
@@ -52,10 +53,12 @@ export default function Delivery({ navigation: { push } }) {
   }
 
   return (
-    <Container>
-      {renderProfile()}
-      {renderList()}
-    </Container>
+    <Background>
+      <Container>
+        {renderProfile()}
+        {renderList()}
+      </Container>
+    </Background>
   );
 }
 

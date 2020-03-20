@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { navigationRef } from '~/services/RootNavigation';
@@ -12,6 +13,11 @@ export default function Routes() {
   const NavStack = createStackNavigator();
   return (
     <NavigationContainer ref={navigationRef}>
+      <StatusBar
+        barStyle={signed ? 'dark-content' : 'light-content'}
+        backgroundColor={signed ? '#fff' : '#7159c1'}
+      />
+
       <NavStack.Navigator
         initialRouteName={signed ? 'Dashboard' : 'SignIn'}
         headerMode="none"
