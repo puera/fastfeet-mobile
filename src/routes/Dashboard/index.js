@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Deliveries from '~/pages/Deliveries';
+import Deliveries from '~/routes/Dashboard/Deliveries';
+
 import Profile from '~/pages/Profile';
 
 export default function Dashboard() {

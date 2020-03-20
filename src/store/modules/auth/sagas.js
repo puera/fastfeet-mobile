@@ -21,4 +21,11 @@ export function* signIn({ payload }) {
     Alert.alert('Falha na autenticação', 'verifique seus dados');
   }
 }
-export default all([takeLatest('@auth/SIGN_IN_REQUEST', signIn)]);
+
+export function signOut() {
+  RootNavigation.reset(0, 'SignIn');
+}
+export default all([
+  takeLatest('@auth/SIGN_IN_REQUEST', signIn),
+  takeLatest('@auth/SIGN_OUT', signOut),
+]);

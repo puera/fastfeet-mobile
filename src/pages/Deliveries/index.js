@@ -1,57 +1,66 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useIsFocused } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
-import Avatar from '~/components/Avatar';
+import api from '~/services/api';
 
-import { signOut } from '~/store/modules/auth/actions';
+import DeliveryItem from '~/components/Item';
+import Profile from '~/components/Profile';
 
-import {
-  Container,
-  ProfileData,
-  PersonalData,
-  WelcomeText,
-  Name,
-  Header,
-  LogoutButton,
-} from './styles';
+import { Container, List } from './styles';
 
-export default function Delivery({ navigation }) {
-  const deliveryman = useSelector(state => state.user.profile);
-  const dispatch = useDispatch();
+export default function Delivery({ navigation: { push } }) {
+  const profile = useSelector(state => state.user.profile);
+  const isFocused = useIsFocused();
 
-  function handleSignOut() {
-    navigation.reset({ index: 0, routes: [{ name: 'SignIn' }] });
-    dispatch(signOut());
-  }
+  const [pendingDeliveries, setPendingDeliveries] = useState([]);
+
+  useEffect(() => {
+    async function loadDeliveries() {
+      const [pendingResponse] = await Promise.all([
+        api.get(`deliveryman/${profile?.id}/list`),
+      ]);
+
+      setPendingDeliveries(pendingResponse.data.deliveries);
+    }
+
+    if (isFocused) loadDeliveries();
+  }, [isFocused, profile]);
 
   function renderProfile() {
+    return <Profile profile={profile} />;
+  }
+
+  function renderList() {
     return (
-      <Header>
-        <ProfileData>
-          <Avatar size={70} url={deliveryman?.avatar?.url}>
-            {deliveryman?.name}
-          </Avatar>
-          <PersonalData>
-            <WelcomeText>Bem vindo de volta,</WelcomeText>
-            <Name>{deliveryman?.name}</Name>
-          </PersonalData>
-        </ProfileData>
-        <LogoutButton onPress={handleSignOut}>
-          <Icon name="exit-to-app" size={30} color="#E74040" />
-        </LogoutButton>
-      </Header>
+      <List
+        data={pendingDeliveries}
+        keyExtractor={item => String(item.id)}
+        renderItem={({ item }) => (
+          <DeliveryItem
+            delivery={item}
+            handleSeeDetailsPressed={() =>
+              push('', {
+                delivery: item,
+              })
+            }
+          />
+        )}
+      />
     );
   }
-  return <Container>{renderProfile()}</Container>;
+
+  return (
+    <Container>
+      {renderProfile()}
+      {renderList()}
+    </Container>
+  );
 }
 
 Delivery.propTypes = {
-  route: PropTypes.shape({
-    params: PropTypes.object,
-  }).isRequired,
   navigation: PropTypes.shape({
-    reset: PropTypes.func,
+    push: PropTypes.func,
   }).isRequired,
 };
