@@ -12,9 +12,20 @@ export default function DeliveriesNav({ navigation: { navigate } }) {
   return (
     <StackNav.Navigator
       screenOptions={{
-        headerTransparent: true,
-        headerTintColor: '#7159c1',
+        headerTintColor: '#fff',
         headerTitleAlign: 'center',
+        headerStyle: {
+          backgroundColor: '#7D40E7',
+          height: 155,
+        },
+        headerTitleContainerStyle: {
+          alignSelf: 'flex-start',
+        },
+        headerLeftContainerStyle: {
+          flexDirection: 'row',
+          marginTop: 5,
+          marginLeft: 5,
+        },
       }}
       headerMode="screen"
       initialRouteName="DeliveriesStack"
@@ -31,7 +42,7 @@ export default function DeliveriesNav({ navigation: { navigate } }) {
           title: 'Detalhes da Encomenda',
           headerLeft: () => (
             <TouchableOpacity onPress={() => navigate('DeliveriesStack')}>
-              <Icon name="chevron-left" size={20} color="#7159c1" />
+              <Icon name="chevron-left" size={20} color="#fff" />
             </TouchableOpacity>
           ),
         }}

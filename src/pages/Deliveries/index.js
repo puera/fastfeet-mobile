@@ -1,54 +1,124 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { Alert, BackHandler, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 import { useIsFocused } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 import api from '~/services/api';
 
-import DeliveryItem from '~/components/Item';
-import Profile from '~/components/Profile';
+import DeliveryItem from '~/components/DeliveryItem';
+import Header from '~/components/Header';
 import Background from '~/components/Background';
 
-import { Container, List } from './styles';
+import {
+  Container,
+  List,
+  HeaderList,
+  TextList,
+  MenuList,
+  TextMenu,
+  Menu,
+} from './styles';
 
-export default function Delivery({ navigation: { push } }) {
+import { signOut } from '~/store/modules/auth/actions';
+import { statusBarConfig } from '~/store/modules/user/actions';
+
+export default function Delivery({ navigation: { navigate } }) {
+  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const profile = useSelector(state => state.user.profile);
-  const isFocused = useIsFocused();
+  const [selectedPeding, setSelectedPeding] = useState(true);
+  const [selectedDelivered, setSelectedDelivered] = useState(false);
+  const focus = useIsFocused();
 
-  const [pendingDeliveries, setPendingDeliveries] = useState([]);
+  const [deliveries, setDeliveries] = useState([]);
+
+  const loadData = useCallback(
+    async function loadDeliveries(status) {
+      setLoading(true);
+      const response = status
+        ? await api.get(`deliveryman/${profile?.id}/list`)
+        : await api.get(`deliveryman/${profile?.id}/deliveries`);
+
+      setLoading(false);
+      setDeliveries(response.data.deliveries);
+    },
+    [profile]
+  );
 
   useEffect(() => {
-    async function loadDeliveries() {
-      const [pendingResponse] = await Promise.all([
-        api.get(`deliveryman/${profile?.id}/list`),
-      ]);
+    if (focus) {
+      loadData(selectedPeding);
+      dispatch(statusBarConfig('#fff', 'dark-content'));
+      const backAction = () => {
+        Alert.alert('Opa!', 'Deseja realmente deslogar do FastFeet?', [
+          {
+            text: 'Cancelar',
+            onPress: () => null,
+          },
+          { text: 'Sim', onPress: () => dispatch(signOut()) },
+        ]);
 
-      setPendingDeliveries(pendingResponse.data.deliveries);
+        return true;
+      };
+
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        backAction
+      );
+      return () => backHandler.remove();
     }
+  }, [dispatch, focus, selectedPeding, loadData]);
 
-    if (isFocused) loadDeliveries();
-  }, [isFocused, profile]);
+  function handlePeding() {
+    setSelectedPeding(true);
+    setSelectedDelivered(false);
+    loadData(selectedPeding);
+  }
+
+  function handleDelivered() {
+    setSelectedPeding(false);
+    setSelectedDelivered(true);
+    loadData();
+  }
 
   function renderProfile() {
-    return <Profile profile={profile} />;
+    return <Header profile={profile} />;
   }
 
   function renderList() {
     return (
-      <List
-        data={pendingDeliveries}
-        keyExtractor={item => String(item.id)}
-        renderItem={({ item }) => (
-          <DeliveryItem
-            delivery={item}
-            handleSeeDetailsPressed={() =>
-              push('DeliveryDetail', {
-                delivery: item,
-              })
-            }
+      <>
+        <HeaderList>
+          <TextList>Entregas</TextList>
+          <MenuList>
+            <Menu onPress={handlePeding}>
+              <TextMenu selected={selectedPeding}>Pendentes</TextMenu>
+            </Menu>
+            <Menu onPress={handleDelivered}>
+              <TextMenu selected={selectedDelivered}>Entregues</TextMenu>
+            </Menu>
+          </MenuList>
+        </HeaderList>
+        {deliveries.length ? (
+          <List
+            data={deliveries}
+            keyExtractor={item => String(item.id)}
+            renderItem={({ item }) => (
+              <DeliveryItem
+                delivery={item}
+                handleSeeDetailsPressed={() =>
+                  navigate('DeliveryDetail', {
+                    delivery: item,
+                  })
+                }
+              />
+            )}
           />
+        ) : (
+          <TextMenu>Nenhum registro encontrado</TextMenu>
         )}
-      />
+      </>
     );
   }
 
@@ -56,7 +126,15 @@ export default function Delivery({ navigation: { push } }) {
     <Background>
       <Container>
         {renderProfile()}
-        {renderList()}
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color="#7D40E7"
+            style={{ marginTop: 200 }}
+          />
+        ) : (
+          renderList()
+        )}
       </Container>
     </Background>
   );
@@ -64,6 +142,6 @@ export default function Delivery({ navigation: { push } }) {
 
 Delivery.propTypes = {
   navigation: PropTypes.shape({
-    push: PropTypes.func,
+    navigate: PropTypes.func,
   }).isRequired,
 };

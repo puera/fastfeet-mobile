@@ -2,6 +2,8 @@ import { produce } from 'immer';
 
 const INITIAL_STATE = {
   profile: null,
+  barStyle: null,
+  backgroundColor: null,
 };
 
 export default function user(state = INITIAL_STATE, action) {
@@ -13,6 +15,11 @@ export default function user(state = INITIAL_STATE, action) {
       }
       case '@auth/SIGN_OUT': {
         draft.profile = null;
+        break;
+      }
+      case '@user/COLOR': {
+        draft.barStyle = action.payload.styleBar;
+        draft.backgroundColor = action.payload.backgroundColor;
         break;
       }
       default:

@@ -30,7 +30,6 @@ export default function DeliveryItem({ delivery, handleSeeDetailsPressed }) {
       }),
     [delivery.createdAt]
   );
-  console.tron.log(delivery);
   return (
     <Contanier>
       <DeliveryHeader>
@@ -45,11 +44,11 @@ export default function DeliveryItem({ delivery, handleSeeDetailsPressed }) {
             <StepName>Aguardando</StepName>
           </Step>
           <Step>
-            <Dot filled />
+            <Dot filled={delivery.start_date ? 1 : 0} />
             <StepName>Retirada</StepName>
           </Step>
           <Step>
-            <Dot />
+            <Dot filled={delivery.end_date ? 1 : 0} />
             <StepName>Entregue</StepName>
           </Step>
         </DeliveryHeaderStatus>
@@ -74,8 +73,9 @@ export default function DeliveryItem({ delivery, handleSeeDetailsPressed }) {
 DeliveryItem.propTypes = {
   delivery: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    status: PropTypes.string.isRequired,
     createdAt: PropTypes.string.isRequired,
+    start_date: PropTypes.string,
+    end_date: PropTypes.string,
     recipient: PropTypes.shape({
       city: PropTypes.string.isRequired,
     }),

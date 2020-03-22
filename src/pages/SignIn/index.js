@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useIsFocused } from '@react-navigation/native';
 import { Image, Alert } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -8,12 +9,14 @@ import api from '~/services/api';
 import logo from '~/assets/fastfeet-logo.png';
 
 import { signInRequest } from '~/store/modules/auth/actions';
+import { statusBarConfig } from '~/store/modules/user/actions';
 
 import { Container, Background, Form, FormInput, SubmitButton } from './styles';
 
 export default function SignIn() {
   const loading = useSelector(state => state.auth.loading);
   const dispatch = useDispatch();
+  const focus = useIsFocused();
 
   const [id, setId] = useState();
 
@@ -29,6 +32,10 @@ export default function SignIn() {
       Alert.alert('Erro', 'Verifique seus dados');
     }
   }
+
+  useEffect(() => {
+    if (focus) dispatch(statusBarConfig('#7159c1', 'light-content'));
+  }, [dispatch, focus]);
 
   return (
     <Background>

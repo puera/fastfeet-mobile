@@ -10,13 +10,13 @@ import Dashboard from '~/routes/Dashboard';
 
 export default function Routes() {
   const signed = useSelector(state => state.auth.signed);
+  const barStyle = useSelector(state => state.user.barStyle);
+  const backgroundColor = useSelector(state => state.user.backgroundColor);
+
   const NavStack = createStackNavigator();
   return (
     <NavigationContainer ref={navigationRef}>
-      <StatusBar
-        barStyle={signed ? 'dark-content' : 'light-content'}
-        backgroundColor={signed ? '#fff' : '#7159c1'}
-      />
+      <StatusBar barStyle={barStyle} backgroundColor={backgroundColor} />
 
       <NavStack.Navigator
         initialRouteName={signed ? 'Dashboard' : 'SignIn'}
