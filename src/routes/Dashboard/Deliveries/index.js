@@ -16,15 +16,12 @@ export default function DeliveriesNav({ navigation: { navigate } }) {
         headerTitleAlign: 'center',
         headerStyle: {
           backgroundColor: '#7D40E7',
-          height: 155,
-        },
-        headerTitleContainerStyle: {
-          alignSelf: 'flex-start',
-        },
-        headerLeftContainerStyle: {
-          flexDirection: 'row',
-          marginTop: 5,
-          marginLeft: 5,
+          shadowOpacity: 0,
+          shadowOffset: {
+            height: 0,
+          },
+          shadowRadius: 0,
+          elevation: 0,
         },
       }}
       headerMode="screen"
