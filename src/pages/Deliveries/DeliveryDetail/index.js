@@ -69,8 +69,8 @@ export default function DeliveryDetail({ route, navigation: { navigate } }) {
 
   return (
     <Background>
+      <ContainerEffect />
       <Container>
-        <ContainerEffect />
         <ContainerDelivery>
           <DeliveryHeader>
             <Icon name="local-shipping" color="#7D40E7" size={20} />

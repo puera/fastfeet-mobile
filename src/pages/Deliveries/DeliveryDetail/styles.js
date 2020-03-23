@@ -3,13 +3,13 @@ import styled from 'styled-components/native';
 export const Container = styled.View`
   flex: 1;
   align-items: center;
+  padding: 0 20px;
 `;
 
 export const ButtomGroup = styled.View`
   margin-top: 20px;
   flex-direction: row;
-  height: 83px;
-  width: 400px;
+  align-self: stretch;
   background-color: #0000001a;
   border-color: #f8f9fd;
   border-radius: 4px;
@@ -19,6 +19,7 @@ export const ButtomGroup = styled.View`
 
 export const ButtomContainer = styled.TouchableOpacity`
   align-items: center;
+  align-self: stretch;
 `;
 
 export const ButtonText = styled.Text`
@@ -32,8 +33,7 @@ export const BorderButtom = styled.View`
 `;
 
 export const ContainerDelivery = styled.View`
-  height: 290px;
-  width: 400px;
+  align-self: stretch;
   background-color: #fff;
   border-radius: 4px;
   border-color: #0000001a;
@@ -43,8 +43,7 @@ export const ContainerDelivery = styled.View`
 `;
 
 export const ContainerSituation = styled.View`
-  height: 180px;
-  width: 400px;
+  align-self: stretch;
   background-color: #fff;
   border-radius: 4px;
   border-color: #0000001a;
