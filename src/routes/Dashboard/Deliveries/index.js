@@ -6,6 +6,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Deliveries from '~/pages/Deliveries';
 import DeliveryDetail from '~/pages/Deliveries/DeliveryDetail';
+import ConfirmDelivery from '~/pages/Deliveries/ConfirmDelivery';
+
+import InfoProblem from '~/pages/Problem/InfoProblem';
+import Problem from '~/pages/Problem';
 
 export default function DeliveriesNav({ navigation: { navigate } }) {
   const StackNav = createStackNavigator();
@@ -39,6 +43,42 @@ export default function DeliveriesNav({ navigation: { navigate } }) {
           title: 'Detalhes da Encomenda',
           headerLeft: () => (
             <TouchableOpacity onPress={() => navigate('DeliveriesStack')}>
+              <Icon name="chevron-left" size={20} color="#fff" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <StackNav.Screen
+        name="InfoProblem"
+        component={InfoProblem}
+        options={{
+          title: 'Informar problema',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigate('DeliveryDetail')}>
+              <Icon name="chevron-left" size={20} color="#fff" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <StackNav.Screen
+        name="Problem"
+        component={Problem}
+        options={{
+          title: 'Visualizar problemas',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigate('DeliveryDetail')}>
+              <Icon name="chevron-left" size={20} color="#fff" />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <StackNav.Screen
+        name="ConfirmDelivery"
+        component={ConfirmDelivery}
+        options={{
+          title: 'Confirmar Entrega',
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => navigate('DeliveryDetail')}>
               <Icon name="chevron-left" size={20} color="#fff" />
             </TouchableOpacity>
           ),

@@ -5,13 +5,6 @@ export const Container = styled.View`
   align-items: center;
 `;
 
-export const ContainerEffect = styled.View`
-  height: 90px;
-  width: 100%;
-  background-color: #7d40e7;
-  position: absolute;
-`;
-
 export const ButtomGroup = styled.View`
   margin-top: 20px;
   flex-direction: row;

@@ -27,6 +27,7 @@ export default function Delivery({ navigation: { navigate } }) {
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const profile = useSelector(state => state.user.profile);
+  const statusBarBG = useSelector(state => state.user.backgroundColor);
   const [selectedPeding, setSelectedPeding] = useState(true);
   const [selectedDelivered, setSelectedDelivered] = useState(false);
   const focus = useIsFocused();
@@ -49,7 +50,8 @@ export default function Delivery({ navigation: { navigate } }) {
   useEffect(() => {
     if (focus) {
       loadData(selectedPeding);
-      dispatch(statusBarConfig('#fff', 'dark-content'));
+      if (statusBarBG !== '#fff')
+        dispatch(statusBarConfig('#fff', 'dark-content'));
       const backAction = () => {
         Alert.alert('Opa!', 'Deseja realmente deslogar do FastFeet?', [
           {
@@ -68,7 +70,7 @@ export default function Delivery({ navigation: { navigate } }) {
       );
       return () => backHandler.remove();
     }
-  }, [dispatch, focus, selectedPeding, loadData]);
+  }, [dispatch, focus, selectedPeding, loadData, statusBarBG]);
 
   function handlePeding() {
     setSelectedPeding(true);

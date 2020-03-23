@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useIsFocused } from '@react-navigation/native';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { parseISO, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -9,6 +9,8 @@ import ptBR from 'date-fns/locale/pt-BR';
 import { statusBarConfig } from '~/store/modules/user/actions';
 
 import Background from '~/components/Background';
+import ContainerEffect from '~/components/ContainerEffect';
+
 import {
   Container,
   ContainerDelivery,
@@ -20,17 +22,17 @@ import {
   DateContainer,
   Date,
   ContainerSituation,
-  ContainerEffect,
   ButtomGroup,
   ButtomContainer,
   ButtonText,
   BorderButtom,
 } from './styles';
 
-export default function DeliveryDetail({ route }) {
+export default function DeliveryDetail({ route, navigation: { navigate } }) {
   const { delivery } = route.params;
   const focus = useIsFocused();
   const dispatch = useDispatch();
+  const statusBarBG = useSelector(state => state.user.backgroundColor);
 
   const statusFormatted = useMemo(() => {
     switch (delivery.status) {
@@ -60,8 +62,10 @@ export default function DeliveryDetail({ route }) {
   }, []);
 
   useEffect(() => {
-    if (focus) dispatch(statusBarConfig('#7D40E7', 'light-content'));
-  }, [focus, dispatch]);
+    if (focus && statusBarBG !== '#7D40E7') {
+      dispatch(statusBarConfig('#7D40E7', 'light-content'));
+    }
+  }, [focus, dispatch, statusBarBG]);
 
   return (
     <Background>
@@ -110,19 +114,25 @@ export default function DeliveryDetail({ route }) {
           </DateContainer>
         </ContainerSituation>
         <ButtomGroup>
-          <ButtomContainer>
+          <ButtomContainer
+            onPress={() => navigate('InfoProblem', { id: delivery.id })}
+          >
             <Icon name="highlight-off" color="#E74040" size={20} />
             <ButtonText>Informar</ButtonText>
             <ButtonText>Problema</ButtonText>
           </ButtomContainer>
           <BorderButtom />
-          <ButtomContainer>
+          <ButtomContainer
+            onPress={() => navigate('Problem', { id: delivery.id })}
+          >
             <Icon name="info-outline" color="#E7BA40" size={20} />
             <ButtonText>Visualizar</ButtonText>
             <ButtonText>Problemas</ButtonText>
           </ButtomContainer>
           <BorderButtom />
-          <ButtomContainer>
+          <ButtomContainer
+            onPress={() => navigate('ConfirmDelivery', { id: delivery.id })}
+          >
             <Icon name="alarm-on" color="#7D40E7" size={20} />
             <ButtonText>Confirmar</ButtonText>
             <ButtonText>Entrega</ButtonText>
@@ -134,9 +144,13 @@ export default function DeliveryDetail({ route }) {
 }
 
 DeliveryDetail.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func,
+  }).isRequired,
   route: PropTypes.shape({
     params: PropTypes.shape({
       delivery: PropTypes.shape({
+        id: PropTypes.number,
         status: PropTypes.string,
         product: PropTypes.string,
         start_date: PropTypes.string,
