@@ -14,6 +14,7 @@ import {
   WelcomeText,
   Name,
   LogoutButton,
+  TextContainer,
 } from './styles';
 
 export default function Header({ profile }) {
@@ -27,7 +28,9 @@ export default function Header({ profile }) {
         </Avatar>
         <PersonalData>
           <WelcomeText>Bem vindo de volta,</WelcomeText>
-          <Name>{profile?.name}</Name>
+          <TextContainer>
+            <Name numberOfLines={2}>{profile?.name}</Name>
+          </TextContainer>
         </PersonalData>
       </ProfileData>
       <LogoutButton onPress={() => dispatch(signOut())}>

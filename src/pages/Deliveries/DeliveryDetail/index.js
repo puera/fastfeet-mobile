@@ -113,7 +113,7 @@ export default function DeliveryDetail({ route, navigation: { navigate } }) {
             </Date>
           </DateContainer>
         </ContainerSituation>
-        <ButtomGroup>
+        <ButtomGroup display={delivery.end_date ? 1 : 0}>
           <ButtomContainer
             onPress={() => navigate('InfoProblem', { id: delivery.id })}
           >

@@ -27,6 +27,9 @@ export default function DeliveriesNav({ navigation: { navigate } }) {
           shadowRadius: 0,
           elevation: 0,
         },
+        headerLeftContainerStyle: {
+          marginLeft: 5,
+        },
       }}
       headerMode="screen"
       initialRouteName="DeliveriesStack"

@@ -7,6 +7,7 @@ export const Container = styled.View`
 `;
 
 export const ButtomGroup = styled.View`
+  display: ${props => (props.display ? 'none' : 'flex')};
   margin-top: 20px;
   flex-direction: row;
   align-self: stretch;
