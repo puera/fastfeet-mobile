@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
+import { Alert } from 'react-native';
 import PropTypes from 'prop-types';
 import { useIsFocused } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { parseISO, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
+import api from '~/services/api';
 import { statusBarConfig } from '~/store/modules/user/actions';
 
 import Background from '~/components/Background';
@@ -26,6 +28,7 @@ import {
   ButtomContainer,
   ButtonText,
   BorderButtom,
+  ConfirmContainer,
 } from './styles';
 
 export default function DeliveryDetail({ route, navigation: { navigate } }) {
@@ -66,6 +69,37 @@ export default function DeliveryDetail({ route, navigation: { navigate } }) {
       dispatch(statusBarConfig('#7D40E7', 'light-content'));
     }
   }, [focus, dispatch, statusBarBG]);
+
+  async function ConfirmWithdraw() {
+    await api
+      .put(
+        `orders/deliveryman/${delivery.deliveryman.id}/withdraw/${delivery.id}`,
+        null,
+        {
+          params: {
+            start_date: new window.Date().getTime(),
+          },
+        }
+      )
+      .then(response => {
+        if (response.status === 200) {
+          Alert.alert('Sucesso', 'Encomenda retirada com sucesso!', [
+            {
+              text: 'Ok',
+              onPress: () => navigate('DeliveriesStack'),
+            },
+          ]);
+        }
+      })
+      .catch(error => {
+        if (error.response.status === 400) {
+          Alert.alert(
+            'Opa!',
+            'A entrega só pode ser retirada entre 08:00 às 18:00'
+          );
+        }
+      });
+  }
 
   return (
     <Background>
@@ -130,13 +164,27 @@ export default function DeliveryDetail({ route, navigation: { navigate } }) {
             <ButtonText>Problemas</ButtonText>
           </ButtomContainer>
           <BorderButtom />
-          <ButtomContainer
-            onPress={() => navigate('ConfirmDelivery', { id: delivery.id })}
+          <ConfirmContainer
+            display={delivery.start_date ? 1 : 0}
+            onPress={() =>
+              navigate('ConfirmDelivery', {
+                idDelivery: delivery.id,
+                idDeliveryman: delivery.deliveryman.id,
+              })
+            }
           >
             <Icon name="alarm-on" color="#7D40E7" size={20} />
             <ButtonText>Confirmar</ButtonText>
             <ButtonText>Entrega</ButtonText>
-          </ButtomContainer>
+          </ConfirmContainer>
+          <ConfirmContainer
+            display={!delivery.start_date ? 1 : 0}
+            onPress={ConfirmWithdraw}
+          >
+            <Icon name="alarm-on" color="#7D40E7" size={20} />
+            <ButtonText>Confirmar</ButtonText>
+            <ButtonText>Retirada</ButtonText>
+          </ConfirmContainer>
         </ButtomGroup>
       </Container>
     </Background>
@@ -155,6 +203,9 @@ DeliveryDetail.propTypes = {
         product: PropTypes.string,
         start_date: PropTypes.string,
         end_date: PropTypes.string,
+        deliveryman: PropTypes.shape({
+          id: PropTypes.number,
+        }),
         recipient: PropTypes.shape({
           name: PropTypes.string,
           street: PropTypes.string,

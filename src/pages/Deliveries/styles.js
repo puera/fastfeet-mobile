@@ -6,7 +6,7 @@ export const Container = styled.SafeAreaView`
 `;
 
 export const List = styled.FlatList.attrs({
-  showsVertivalScrollIndicator: false,
+  showsVerticalScrollIndicator: false,
   contentContainerStyle: { marginTop: 15 },
 })``;
 

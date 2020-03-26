@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Alert, BackHandler, ActivityIndicator } from 'react-native';
+import { Alert, BackHandler, View, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -25,31 +25,75 @@ import { statusBarConfig } from '~/store/modules/user/actions';
 
 export default function Delivery({ navigation: { navigate } }) {
   const [loading, setLoading] = useState(false);
+  const [pagePedding, setPagePedding] = useState(1);
+  const [pageDelivered, setPageDelivered] = useState(1);
   const dispatch = useDispatch();
   const profile = useSelector(state => state.user.profile);
   const statusBarBG = useSelector(state => state.user.backgroundColor);
   const [selectedPeding, setSelectedPeding] = useState(true);
   const [selectedDelivered, setSelectedDelivered] = useState(false);
+  const [totalPages, setTotalPages] = useState();
   const focus = useIsFocused();
 
   const [deliveries, setDeliveries] = useState([]);
+  const [delivereds, setDelivereds] = useState([]);
 
-  const loadData = useCallback(
-    async function loadDeliveries(status) {
+  const loadDeliveries = useCallback(
+    async function loadDeliveries() {
       setLoading(true);
-      const response = status
-        ? await api.get(`deliveryman/${profile?.id}/list`)
-        : await api.get(`deliveryman/${profile?.id}/deliveries`);
-
+      const response = await api.get(
+        `deliveryman/${profile?.id}/list?page=${pagePedding}`
+      );
       setLoading(false);
-      setDeliveries(response.data.deliveries);
+      setDeliveries(d =>
+        pagePedding > 1
+          ? [...d, ...response.data.deliveries]
+          : response.data.deliveries
+      );
+      setTotalPages(Math.ceil(response.data.count / 5));
     },
-    [profile]
+    [profile, pagePedding]
+  );
+
+  const loadDelivered = useCallback(
+    async function loadDelivered() {
+      setLoading(true);
+      const response = await api.get(
+        `deliveryman/${profile?.id}/deliveries?page=${pageDelivered}`
+      );
+      setLoading(false);
+      setDelivereds(d =>
+        pageDelivered > 1
+          ? [...d, ...response.data.deliveries]
+          : response.data.deliveries
+      );
+      setTotalPages(Math.ceil(response.data.count / 5));
+    },
+
+    [profile, pageDelivered]
+  );
+
+  const loadMore = useCallback(
+    function load(pageToLoad) {
+      if (pageToLoad) {
+        if (pagePedding < totalPages) setPagePedding(pagePedding + 1);
+      } else if (pageDelivered < totalPages)
+        setPageDelivered(pageDelivered + 1);
+    },
+
+    [pageDelivered, pagePedding, totalPages]
   );
 
   useEffect(() => {
+    if (!focus) {
+      setDeliveries([]);
+      setPagePedding(1);
+      setDelivereds([]);
+      setPageDelivered(1);
+    }
     if (focus) {
-      loadData(selectedPeding);
+      if (selectedPeding) loadDeliveries();
+      if (selectedDelivered) loadDelivered();
       if (statusBarBG !== '#fff')
         dispatch(statusBarConfig('#fff', 'dark-content'));
       const backAction = () => {
@@ -70,18 +114,43 @@ export default function Delivery({ navigation: { navigate } }) {
       );
       return () => backHandler.remove();
     }
-  }, [dispatch, focus, selectedPeding, loadData, statusBarBG]);
+  }, [
+    dispatch,
+    focus,
+    selectedPeding,
+    selectedDelivered,
+    loadDelivered,
+    loadDeliveries,
+    statusBarBG,
+  ]);
 
-  function handlePeding() {
-    setSelectedPeding(true);
+  async function handlePeding() {
+    if (selectedPeding) return;
     setSelectedDelivered(false);
-    loadData(selectedPeding);
+    setSelectedPeding(true);
+    if (selectedDelivered) {
+      setDeliveries([]);
+      setPagePedding(1);
+    }
   }
 
-  function handleDelivered() {
-    setSelectedPeding(false);
+  async function handleDelivered() {
+    if (selectedDelivered) return;
     setSelectedDelivered(true);
-    loadData();
+    setSelectedPeding(false);
+    if (selectedPeding) {
+      setDelivereds([]);
+      setPageDelivered(1);
+    }
+  }
+
+  function renderFooter() {
+    if (!loading) return null;
+    return (
+      <View>
+        <ActivityIndicator color="#7159c1" size="small" />
+      </View>
+    );
   }
 
   function renderProfile() {
@@ -102,24 +171,23 @@ export default function Delivery({ navigation: { navigate } }) {
             </Menu>
           </MenuList>
         </HeaderList>
-        {deliveries.length ? (
-          <List
-            data={deliveries}
-            keyExtractor={item => String(item.id)}
-            renderItem={({ item }) => (
-              <DeliveryItem
-                delivery={item}
-                handleSeeDetailsPressed={() =>
-                  navigate('DeliveryDetail', {
-                    delivery: item,
-                  })
-                }
-              />
-            )}
-          />
-        ) : (
-          <TextMenu>Nenhum registro encontrado</TextMenu>
-        )}
+        <List
+          ListFooterComponent={renderFooter}
+          onEndReachedThreshold={0.1}
+          onEndReached={() => loadMore(selectedPeding)}
+          data={selectedPeding ? deliveries : delivereds}
+          keyExtractor={item => String(item.id)}
+          renderItem={({ item }) => (
+            <DeliveryItem
+              delivery={item}
+              handleSeeDetailsPressed={() =>
+                navigate('DeliveryDetail', {
+                  delivery: item,
+                })
+              }
+            />
+          )}
+        />
       </>
     );
   }
@@ -128,15 +196,7 @@ export default function Delivery({ navigation: { navigate } }) {
     <Background>
       <Container>
         {renderProfile()}
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color="#7D40E7"
-            style={{ marginTop: 200 }}
-          />
-        ) : (
-          renderList()
-        )}
+        {renderList()}
       </Container>
     </Background>
   );

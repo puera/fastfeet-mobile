@@ -23,6 +23,12 @@ export const ButtomContainer = styled.TouchableOpacity`
   align-self: stretch;
 `;
 
+export const ConfirmContainer = styled.TouchableOpacity`
+  align-items: center;
+  align-self: stretch;
+  display: ${props => (props.display ? 'flex' : 'none')};
+`;
+
 export const ButtonText = styled.Text`
   font-size: 15px;
   color: #999999;
@@ -59,14 +65,14 @@ export const DeliveryHeader = styled.View`
 `;
 
 export const TextHeaderDelivery = styled.Text`
-  font-size: 19px;
+  font-size: 15px;
   font-weight: bold;
   color: #7d40e7;
   margin-left: 10px;
 `;
 
 export const TextHeader = styled.Text`
-  font-size: 19px;
+  font-size: 15px;
   color: #999999;
   font-weight: bold;
 `;
@@ -76,7 +82,7 @@ export const RecipientContainer = styled.View`
 `;
 
 export const TextDelivery = styled.Text`
-  font-size: 19px;
+  font-size: 15px;
   color: #666666;
 `;
 

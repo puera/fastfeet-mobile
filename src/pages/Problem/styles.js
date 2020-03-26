@@ -23,6 +23,6 @@ export const TitleDelivery = styled.Text`
 `;
 
 export const List = styled.FlatList.attrs({
-  showsVertivalScrollIndicator: false,
+  showsVerticalScrollIndicator: false,
   contentContainerStyle: { marginTop: 15 },
 })``;
