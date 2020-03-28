@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 import PropTypes from 'prop-types';
 
 import Background from '~/components/Background';
@@ -22,22 +22,54 @@ export default function Problem({ route }) {
   const [problems, setProblems] = useState([]);
   const focus = useIsFocused();
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState();
 
   const loadProblems = useCallback(
     async function loadProblems() {
-      try {
-        setLoading(true);
-        const response = await api.get(`delivery/${id}/problems`);
-        setProblems(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.tron.log(error);
-      }
+      setLoading(true);
+      const response = await api.get(`delivery/${id}/problems?page=${page}`);
+      setLoading(false);
+
+      setProblems(p =>
+        page > 1 ? [...p, ...response.data.problems] : response.data.problems
+      );
+      setTotalPages(Math.ceil(response.data.count / 10));
     },
-    [id]
+    [id, page]
   );
 
+  const loadMore = useCallback(
+    function load() {
+      if (page < totalPages) setPage(page + 1);
+    },
+    [page, totalPages]
+  );
+
+  function renderFooter() {
+    if (!loading) return null;
+    return (
+      <View>
+        <ActivityIndicator color="#E74040" size="small" />
+      </View>
+    );
+  }
+
+  function renderEmpty() {
+    return (
+      <TextContainer>
+        <TextMenu>
+          Nenhum dado a ser mostrado aguarde o carregamento ...
+        </TextMenu>
+      </TextContainer>
+    );
+  }
+
   useEffect(() => {
+    if (!focus) {
+      setPage(1);
+      setProblems([]);
+    }
     if (focus) {
       loadProblems();
     }
@@ -46,17 +78,15 @@ export default function Problem({ route }) {
   function renderList() {
     return (
       <>
-        {problems.length ? (
-          <List
-            data={problems}
-            keyExtractor={item => String(item.id)}
-            renderItem={({ item }) => <ProblemItem problem={item} />}
-          />
-        ) : (
-          <TextContainer>
-            <TextMenu>Nenhum dado a ser mostrado</TextMenu>
-          </TextContainer>
-        )}
+        <List
+          ListEmptyComponent={renderEmpty}
+          ListFooterComponent={renderFooter}
+          onEndReachedThreshold={0.05}
+          onEndReached={loadMore}
+          data={problems}
+          keyExtractor={item => String(item.id)}
+          renderItem={({ item }) => <ProblemItem problem={item} />}
+        />
       </>
     );
   }
@@ -66,15 +96,7 @@ export default function Problem({ route }) {
       <ContainerEffect />
       <Container>
         <TitleDelivery>Encomenda {id}</TitleDelivery>
-        {loading ? (
-          <ActivityIndicator
-            size="large"
-            color="#7D40E7"
-            style={{ marginTop: 200 }}
-          />
-        ) : (
-          renderList()
-        )}
+        {renderList()}
       </Container>
     </Background>
   );

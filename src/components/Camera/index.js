@@ -78,9 +78,6 @@ export default function Camera({ PackageId, DeliverId, onPressed }) {
               style={{
                 flex: 1,
                 marginTop: 20,
-
-                // height: 200,
-                // width: 350,
               }}
               androidCameraPermissionOptions={{
                 title: 'Opa!',
@@ -92,19 +89,11 @@ export default function Camera({ PackageId, DeliverId, onPressed }) {
               type="back"
               flashMode="auto"
               captureAudio={false}
-              notAuthorizedView={
-                <CameraContainer>
-                  <Text>Câmera não autorizada =(</Text>
-                </CameraContainer>
-              }
             />
           </CameraContainer>
         )}
 
-        <CameraButton
-          visible={previewShot ? 1 : 0}
-          onPress={() => takePicture()}
-        >
+        <CameraButton visible={previewShot ? 1 : 0} onPress={takePicture}>
           {loading ? (
             <>
               <ActivityIndicator size="large" color="#fff" />

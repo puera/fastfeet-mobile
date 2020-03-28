@@ -9,6 +9,8 @@ export const Container = styled.View`
 export const TextContainer = styled.View`
   flex: 1;
   justify-content: center;
+  align-items: center;
+  margin-top: 50px;
 `;
 
 export const TextMenu = styled.Text`

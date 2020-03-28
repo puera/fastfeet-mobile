@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { parseISO, format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -10,8 +11,16 @@ import Background from '~/components/Background';
 
 import { Container, Label, Text, LogoutButton, PersonalData } from './styles';
 
+import { statusBarConfig } from '~/store/modules/user/actions';
+
 export default function Profile() {
   const deliveryman = useSelector(state => state.user.profile);
+  const statusBarBG = useSelector(state => state.user.backgroundColor);
+
+  const dispatch = useDispatch();
+
+  const focus = useIsFocused();
+
   const formattedDate = useMemo(
     () =>
       deliveryman
@@ -23,7 +32,12 @@ export default function Profile() {
     [deliveryman]
   );
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    if (focus) {
+      if (statusBarBG !== '#fff')
+        dispatch(statusBarConfig('#fff', 'dark-content'));
+    }
+  }, [dispatch, focus, statusBarBG]);
 
   return (
     <Background>

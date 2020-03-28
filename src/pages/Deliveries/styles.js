@@ -37,3 +37,16 @@ export const TextMenu = styled.Text`
 export const Menu = styled.TouchableOpacity`
   margin-left: 15px;
 `;
+
+export const TextContainer = styled.View`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+`;
+
+export const TextEmptyMenu = styled.Text`
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+`;

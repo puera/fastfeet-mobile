@@ -18,6 +18,8 @@ import {
   MenuList,
   TextMenu,
   Menu,
+  TextContainer,
+  TextEmptyMenu,
 } from './styles';
 
 import { signOut } from '~/store/modules/auth/actions';
@@ -157,6 +159,16 @@ export default function Delivery({ navigation: { navigate } }) {
     return <Header profile={profile} />;
   }
 
+  function renderEmpty() {
+    return (
+      <TextContainer>
+        <TextEmptyMenu>
+          Nenhum dado a ser mostrado aguarde o carregamento ...
+        </TextEmptyMenu>
+      </TextContainer>
+    );
+  }
+
   function renderList() {
     return (
       <>
@@ -172,6 +184,7 @@ export default function Delivery({ navigation: { navigate } }) {
           </MenuList>
         </HeaderList>
         <List
+          ListEmptyComponent={renderEmpty}
           ListFooterComponent={renderFooter}
           onEndReachedThreshold={0.1}
           onEndReached={() => loadMore(selectedPeding)}
