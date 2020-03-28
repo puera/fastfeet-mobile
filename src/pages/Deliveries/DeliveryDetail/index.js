@@ -13,6 +13,8 @@ import { statusBarConfig } from '~/store/modules/user/actions';
 import Background from '~/components/Background';
 import ContainerEffect from '~/components/ContainerEffect';
 
+import formatCep from '~/utils/formatCep';
+
 import {
   Container,
   ContainerDelivery,
@@ -101,6 +103,10 @@ export default function DeliveryDetail({ route, navigation: { navigate } }) {
       });
   }
 
+  const formattedCep = useCallback(formatCep(delivery.recipient.zip), [
+    delivery.recipient.zip,
+  ]);
+
   return (
     <Background>
       <ContainerEffect />
@@ -119,7 +125,7 @@ export default function DeliveryDetail({ route, navigation: { navigate } }) {
             <TextDelivery>
               {delivery.recipient.street}, {delivery.recipient.number},{' '}
               {delivery.recipient.complement}, {delivery.recipient.city} -{' '}
-              {delivery.recipient.state}, {delivery.recipient.zip}
+              {delivery.recipient.state}, {formattedCep}
             </TextDelivery>
           </RecipientContainer>
           <RecipientContainer>
